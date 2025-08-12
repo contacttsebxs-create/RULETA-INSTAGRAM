@@ -68,7 +68,6 @@ https://www.instagram.com/handle/"></textarea>
         <span id="kpi" class="kpi">0 líneas</span>
         <div style="margin-left:auto">
           <button id="preview" class="ghost" type="button">Vista previa</button>
-          <!-- SIEMPRE habilitado -->
           <button id="next" class="primary" type="button">Ir a la ruleta →</button>
         </div>
       </div>
@@ -110,9 +109,7 @@ https://www.instagram.com/handle/"></textarea>
   </div>
 
 <script>
-/* ========= Código robusto: eventos seguros y sin dependencias externas ========= */
 document.addEventListener('DOMContentLoaded', () => {
-  // ---- referencias
   const setup = document.getElementById('setup');
   const roulette = document.getElementById('roulette');
   const ta = document.getElementById('ta');
@@ -130,11 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const wheel = document.getElementById('wheel');
   const ctx = wheel.getContext('2d');
 
-  // ---- estado
   const LIMIT=5000;
   let labels=[], rotation=0, spinning=false, duration=2000, bitmap=null, bitmapSize=0;
 
-  // ---- utilidades
   const fmt = new Intl.NumberFormat('es-CO');
   const setKPI = () => kpi.textContent = labels.length + ' líneas';
   const setCounter = () => lineCounter.textContent = 'Número de comentarios: ' + fmt.format(labels.length);
@@ -172,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // tamaño real cuadrado (anti-óvalo)
   function sizeWheel(){
     const wrap=document.querySelector('.canvas-wrap');
     const dpr=Math.max(1,window.devicePixelRatio||1);
@@ -189,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const outerR=Math.min(cx,cy)*.94, innerR=Math.min(cx,cy)*.28, rimW=Math.max(2,Math.floor(px*.012));
     o.clearRect(0,0,W,H); o.save(); o.translate(cx,cy);
 
-    const palette=['#f6f1f4','#a7afdf','#aec4e7','#959bd9']; // paleta de tu captura
+    const palette=['#f6f1f4','#a7afdf','#aec4e7','#959bd9'];
     const n=Math.max(1,labels.length||1);
     if(n>=300){
       for(let i=0;i<n;i++){
@@ -217,12 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
       o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
       o.globalCompositeOperation='source-over';
     }
-
-    // aro exterior blanco
     o.lineWidth=rimW; o.strokeStyle='#ffffff';
     o.beginPath(); o.arc(0,0,outerR+rimW*.5,0,Math.PI*2); o.stroke();
 
-    // limpia centro
     o.globalCompositeOperation='destination-out';
     o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
     o.globalCompositeOperation='source-over';
@@ -241,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function toRoulette(){
     labels=parseInput(); setKPI(); setCounter();
     if(!labels.length){
-      // demo para asegurar navegación
       ta.value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
       labels=parseInput(); setKPI(); setCounter();
     }
@@ -297,18 +287,16 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(frame);
   }
 
-  // ---- eventos (seguros)
+  // Eventos
   previewBtn.addEventListener('click', updatePreview);
   next.addEventListener('click', toRoulette);
-  back.addEventListener('click', backToSetup);
+  if (back) back.addEventListener('click', backToSetup); // por si no existe
   spinBtn.addEventListener('click', spin);
   centerBtn.addEventListener('click', spin);
   centerBtn.addEventListener('keydown', e => {
     if(e.key==='Enter'||e.key===' '||e.code==='Space'){ e.preventDefault(); spin(); }
   });
   document.getElementById('close').addEventListener('click', ()=>modal.classList.remove('show'));
-
-  // selector de duración
   document.querySelectorAll('.seg button').forEach(b=>{
     b.addEventListener('click', ()=>{
       document.querySelectorAll('.seg button').forEach(x=>x.removeAttribute('aria-pressed'));
@@ -316,12 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
       duration = Math.max(800, parseInt(b.dataset.sec,10)*1000);
     });
   });
-
-  // resize mantiene el círculo perfecto
   window.addEventListener('resize', ()=>{ bitmap=null; draw(); });
 
-  // arranque
-  updatePreview(); // para que el KPI y la lista muestren algo
+  // Arranque
+  updatePreview();
 });
 </script>
 </body>
