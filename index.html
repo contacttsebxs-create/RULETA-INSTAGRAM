@@ -26,7 +26,7 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .item{display:flex;align-items:center;gap:8px;background:#f8f9fe;border:1px solid #e7ecf7;border-radius:10px;padding:6px 8px}
 .item .tag{font-size:12px;opacity:.85;padding:2px 6px;border-radius:999px;background:#e9eefb}
 
-/* Ruleta redonda */
+/* Ruleta redonda y más pequeña */
 .canvas-wrap{position:relative;margin:12px auto 8px;max-width:600px;aspect-ratio:1/1;flex-grow:1;display:flex;align-items:center;justify-content:center}
 #wheel{display:block;width:100%!important;height:100%!important;filter:drop-shadow(0 10px 24px rgba(0,0,0,.12))}
 .centerBadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);cursor:pointer;user-select:none;outline:none}
@@ -55,24 +55,25 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
   <div class="wrap">
     <section id="setup" class="card" aria-hidden="false">
       <h2>1) Configuración</h2>
-      <p class="small">Pega hasta <b>5.000</b> líneas. Puedes usar <b>xN</b> (ej.: Juan x3). Comas, punto y coma y tabs separan dentro de una línea.</p>
+      <p class="small">Pega hasta <b>5.000</b> líneas. Puedes usar <b>xN</b> (ej.: Juan x3).</p>
       <textarea id="ta" placeholder="@usuario
 usuario
 https://www.instagram.com/handle/"></textarea>
       <div class="row" style="margin-top:8px">
         <div class="seg" role="group" aria-label="Duración del giro">
-          <button type="button" data-sec="2" aria-pressed="true" onclick="setDuration(2000,this)">2s</button>
-          <button type="button" data-sec="4" onclick="setDuration(4000,this)">4s</button>
-          <button type="button" data-sec="8" onclick="setDuration(8000,this)">8s</button>
+          <button type="button" data-sec="2" aria-pressed="true">2s</button>
+          <button type="button" data-sec="4">4s</button>
+          <button type="button" data-sec="8">8s</button>
         </div>
         <span id="kpi" class="kpi">0 líneas</span>
         <div style="margin-left:auto">
-          <button id="preview" class="ghost" type="button" onclick="updatePreview()">Vista previa</button>
-          <button id="next" class="primary" type="button" onclick="goToRoulette()">Ir a la ruleta →</button>
+          <button id="preview" class="ghost" type="button">Vista previa</button>
+          <!-- SIEMPRE habilitado -->
+          <button id="next" class="primary" type="button">Ir a la ruleta →</button>
         </div>
       </div>
       <div id="previewList" class="list"></div>
-      <p class="small" id="audioHint" style="margin-top:6px">👆 Haz clic para activar</p>
+      <p class="small" id="audioHint" style="margin-top:6px">👆 Haz clic para continuar</p>
     </section>
 
     <section id="roulette" class="card" aria-hidden="true">
@@ -86,15 +87,15 @@ https://www.instagram.com/handle/"></textarea>
           </svg>
         </div>
         <canvas id="wheel"></canvas>
-        <div id="centerBtn" class="centerBadge" role="button" tabindex="0" aria-label="Girar" onclick="spin()">?</div>
+        <div id="centerBtn" class="centerBadge" role="button" tabindex="0" aria-label="Girar">?</div>
       </div>
       <div class="row" style="justify-content:space-between;align-items:center">
-        <button id="back" class="ghost" type="button" onclick="backToSetup()">← Volver</button>
+        <button id="back" class="ghost" type="button">← Volver</button>
         <div style="flex:1;max-width:680px">
           <div class="progress"><div class="bar" id="bar"></div></div>
           <div id="lineCounter" class="counter">Número de comentarios: 0</div>
         </div>
-        <button id="spin" class="primary" type="button" onclick="spin()">Girar</button>
+        <button id="spin" class="primary" type="button">Girar</button>
       </div>
     </section>
   </div>
@@ -104,200 +105,224 @@ https://www.instagram.com/handle/"></textarea>
       <h3>Ganador</h3>
       <img id="avatar" class="avatar" alt="Avatar" src="">
       <div id="win" class="win">Nombre</div>
-      <div style="margin-top:10px"><button id="close" type="button" class="ghost" onclick="closeModal()">Cerrar</button></div>
+      <div style="margin-top:10px"><button id="close" type="button" class="ghost">Cerrar</button></div>
     </div>
   </div>
 
 <script>
-/* ======== MODO SEGURO: todo en global y con onclick ======== */
-let LIMIT=5000, labels=[], rotation=0, spinning=false, duration=2000, bitmap=null, bitmapSize=0;
-const $=id=>document.getElementById(id);
+/* ========= Código robusto: eventos seguros y sin dependencias externas ========= */
+document.addEventListener('DOMContentLoaded', () => {
+  // ---- referencias
+  const setup = document.getElementById('setup');
+  const roulette = document.getElementById('roulette');
+  const ta = document.getElementById('ta');
+  const kpi = document.getElementById('kpi');
+  const previewList = document.getElementById('previewList');
+  const next = document.getElementById('next');
+  const back = document.getElementById('back');
+  const previewBtn = document.getElementById('preview');
+  const spinBtn = document.getElementById('spin');
+  const centerBtn = document.getElementById('centerBtn');
+  const bar = document.getElementById('bar');
+  const lineCounter = document.getElementById('lineCounter');
+  const modal = document.getElementById('m');
+  const winEl = document.getElementById('win');
+  const wheel = document.getElementById('wheel');
+  const ctx = wheel.getContext('2d');
 
-/* Delegación de respaldo por si algún onclick se pierde */
-document.addEventListener('click', (e)=>{
-  const t=e.target;
-  if(t.id==='next') goToRoulette();
-  else if(t.id==='back') backToSetup();
-  else if(t.id==='spin' || t.id==='centerBtn') spin();
-  else if(t.id==='preview') updatePreview();
-});
+  // ---- estado
+  const LIMIT=5000;
+  let labels=[], rotation=0, spinning=false, duration=2000, bitmap=null, bitmapSize=0;
 
-/* UI helpers */
-function setDuration(ms, btn){
-  duration = Math.max(800, ms|0);
-  document.querySelectorAll('.seg button').forEach(x=>x.removeAttribute('aria-pressed'));
-  if(btn) btn.setAttribute('aria-pressed','true');
-}
-function setKPI(){ $('kpi').textContent = labels.length + ' líneas'; }
-function setCounter(){ $('lineCounter').textContent = 'Número de comentarios: ' + new Intl.NumberFormat('es-CO').format(labels.length); }
+  // ---- utilidades
+  const fmt = new Intl.NumberFormat('es-CO');
+  const setKPI = () => kpi.textContent = labels.length + ' líneas';
+  const setCounter = () => lineCounter.textContent = 'Número de comentarios: ' + fmt.format(labels.length);
 
-function parseInput(){
-  let raw=($('ta').value||'').replace(/\r\n?/g,'\n');
-  const lines=raw.split('\n'), out=[];
-  outer: for(let i=0;i<lines.length;i++){
-    const parts=lines[i].split(/[;,\t]+/);
-    for(let j=0;j<parts.length;j++){
-      let p=parts[j].trim(); if(!p) continue;
-      const m=p.match(/^(.*?)(?:\s*[xX]\s*(\d+))?$/);
-      const name=(m?m[1]:p).trim();
-      const n=(m&&m[2])?Math.min(LIMIT,Math.max(1,parseInt(m[2],10))):1;
-      for(let k=0;k<n;k++){ out.push(name); if(out.length>=LIMIT) break outer; }
+  function parseInput(){
+    let raw=(ta.value||'').replace(/\r\n?/g,'\n');
+    const lines=raw.split('\n'), out=[];
+    outer: for(let i=0;i<lines.length;i++){
+      const parts=lines[i].split(/[;,\t]+/);
+      for(let j=0;j<parts.length;j++){
+        let p=parts[j].trim(); if(!p) continue;
+        const m=p.match(/^(.*?)(?:\s*[xX]\s*(\d+))?$/);
+        const name=(m?m[1]:p).trim();
+        const n=(m&&m[2])?Math.min(LIMIT,Math.max(1,parseInt(m[2],10))):1;
+        for(let k=0;k<n;k++){ out.push(name); if(out.length>=LIMIT) break outer; }
+      }
+    }
+    return out;
+  }
+
+  function updatePreview(){
+    labels=parseInput(); setKPI();
+    const freq={}; labels.forEach(n=>freq[n]=(freq[n]||0)+1);
+    const arr=Object.keys(freq).map(n=>({name:n,c:freq[n]})).sort((a,b)=>b.c-a.c).slice(0,12);
+    previewList.innerHTML='';
+    if(!labels.length){
+      const it=document.createElement('div'); it.className='small'; it.textContent='No hay datos aún.'; previewList.appendChild(it);
+      return;
+    }
+    for(const a of arr){
+      const d=document.createElement('div'); d.className='item';
+      const n=document.createElement('div'); n.textContent=a.name; n.style.flex='1';
+      const t=document.createElement('div'); t.className='tag'; t.textContent='x'+a.c;
+      d.appendChild(n); d.appendChild(t); previewList.appendChild(d);
     }
   }
-  return out;
-}
 
-function updatePreview(){
-  labels=parseInput(); setKPI();
-  const freq={}; labels.forEach(n=>freq[n]=(freq[n]||0)+1);
-  const arr=Object.keys(freq).map(n=>({name:n,c:freq[n]})).sort((a,b)=>b.c-a.c).slice(0,12);
-  const list=$('previewList'); list.innerHTML='';
-  if(!labels.length){ const it=document.createElement('div'); it.className='small'; it.textContent='No hay datos aún.'; list.appendChild(it); return; }
-  for(const a of arr){
-    const d=document.createElement('div'); d.className='item';
-    const n=document.createElement('div'); n.textContent=a.name; n.style.flex='1';
-    const t=document.createElement('div'); t.className='tag'; t.textContent='x'+a.c;
-    d.appendChild(n); d.appendChild(t); list.appendChild(d);
+  // tamaño real cuadrado (anti-óvalo)
+  function sizeWheel(){
+    const wrap=document.querySelector('.canvas-wrap');
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    const sideCSS=wrap.clientWidth;
+    const side=Math.floor(sideCSS*dpr);
+    if (wheel.width!==side){ wheel.width=side; wheel.height=side; }
+    return side;
   }
-}
 
-/* Navegación */
-function goToRoulette(){
-  if(!labels.length){
-    // Carga demo si está vacío
-    $('ta').value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
-    updatePreview();
-  }
-  labels = parseInput(); setKPI(); setCounter();
-  if(!labels.length){ alert('Pega al menos una línea'); return; }
-  buildBitmap(); rotation=0; draw();
-  document.getElementById('setup').setAttribute('aria-hidden','true');
-  document.getElementById('roulette').setAttribute('aria-hidden','false');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function backToSetup(){
-  document.getElementById('roulette').setAttribute('aria-hidden','true');
-  document.getElementById('setup').setAttribute('aria-hidden','false');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+  function buildBitmap(){
+    const px=sizeWheel(); bitmapSize=px;
+    const off=document.createElement('canvas'); off.width=px; off.height=px; const o=off.getContext('2d');
+    const W=px,H=px,cx=W/2,cy=H/2;
+    const outerR=Math.min(cx,cy)*.94, innerR=Math.min(cx,cy)*.28, rimW=Math.max(2,Math.floor(px*.012));
+    o.clearRect(0,0,W,H); o.save(); o.translate(cx,cy);
 
-/* Canvas perfecto (anti-óvalo) */
-function sizeWheel(){
-  const wrap=document.querySelector('.canvas-wrap');
-  const dpr=Math.max(1,window.devicePixelRatio||1);
-  const sideCSS=wrap.clientWidth;
-  const side=Math.floor(sideCSS*dpr);
-  const wheel=$('wheel');
-  wheel.width=side; wheel.height=side;
-  return side;
-}
-
-function buildBitmap(){
-  const px=sizeWheel(); bitmapSize=px;
-  const off=document.createElement('canvas'); off.width=px; off.height=px; const o=off.getContext('2d');
-  const W=px,H=px,cx=W/2,cy=H/2;
-  const outerR=Math.min(cx,cy)*.94, innerR=Math.min(cx,cy)*.28, rimW=Math.max(2,Math.floor(px*.012));
-  o.clearRect(0,0,W,H); o.save(); o.translate(cx,cy);
-
-  const palette=['#f6f1f4','#a7afdf','#aec4e7','#959bd9'];
-  const n=Math.max(1,labels.length||1);
-  if(n>=300){
-    for(let i=0;i<n;i++){
-      const ang=(i/n)*Math.PI*2, col=palette[i%palette.length];
-      o.beginPath();
-      const x1=Math.cos(ang)*innerR,y1=Math.sin(ang)*innerR,x2=Math.cos(ang)*outerR,y2=Math.sin(ang)*outerR;
-      o.strokeStyle=col; o.lineWidth=Math.max(1,px*.0012);
-      o.moveTo(x1,y1); o.lineTo(x2,y2); o.stroke();
+    const palette=['#f6f1f4','#a7afdf','#aec4e7','#959bd9']; // paleta de tu captura
+    const n=Math.max(1,labels.length||1);
+    if(n>=300){
+      for(let i=0;i<n;i++){
+        const ang=(i/n)*Math.PI*2, col=palette[i%palette.length];
+        o.beginPath();
+        const x1=Math.cos(ang)*innerR,y1=Math.sin(ang)*innerR,x2=Math.cos(ang)*outerR,y2=Math.sin(ang)*outerR;
+        o.strokeStyle=col; o.lineWidth=Math.max(1,px*.0012);
+        o.moveTo(x1,y1); o.lineTo(x2,y2); o.stroke();
+      }
+      const ring=o.createRadialGradient(0,0,innerR*.98,0,0,outerR);
+      ring.addColorStop(0,'rgba(0,0,0,.22)'); ring.addColorStop(1,'rgba(0,0,0,.07)');
+      o.beginPath(); o.arc(0,0,outerR,0,Math.PI*2); o.arc(0,0,innerR,0,Math.PI*2,true); o.closePath(); o.fillStyle=ring; o.fill();
+    }else{
+      const angPer=Math.PI*2/n; let a=0;
+      for(let i=0;i<n;i++){
+        const a0=a,a1=a+angPer; a=a1;
+        const base=palette[i%palette.length];
+        const g=o.createLinearGradient(0,-outerR,0,outerR);
+        g.addColorStop(0,base); g.addColorStop(1,'rgba(0,0,0,.08)');
+        o.beginPath(); o.moveTo(0,0); o.arc(0,0,outerR,a0,a1); o.closePath(); o.fillStyle=g; o.fill();
+        o.strokeStyle='rgba(0,0,0,.18)'; o.lineWidth=Math.max(1,px*.002);
+        o.beginPath(); o.arc(0,0,outerR,a1-0.001,a1); o.stroke();
+      }
+      o.globalCompositeOperation='destination-out';
+      o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
+      o.globalCompositeOperation='source-over';
     }
-    const ring=o.createRadialGradient(0,0,innerR*.98,0,0,outerR);
-    ring.addColorStop(0,'rgba(0,0,0,.22)'); ring.addColorStop(1,'rgba(0,0,0,.07)');
-    o.beginPath(); o.arc(0,0,outerR,0,Math.PI*2); o.arc(0,0,innerR,0,Math.PI*2,true); o.closePath(); o.fillStyle=ring; o.fill();
-  }else{
-    const angPer=Math.PI*2/n; let a=0;
-    for(let i=0;i<n;i++){
-      const a0=a,a1=a+angPer; a=a1;
-      const base=palette[i%palette.length];
-      const g=o.createLinearGradient(0,-outerR,0,outerR);
-      g.addColorStop(0,base); g.addColorStop(1,'rgba(0,0,0,.08)');
-      o.beginPath(); o.moveTo(0,0); o.arc(0,0,outerR,a0,a1); o.closePath(); o.fillStyle=g; o.fill();
-      o.strokeStyle='rgba(0,0,0,.18)'; o.lineWidth=Math.max(1,px*.002);
-      o.beginPath(); o.arc(0,0,outerR,a1-0.001,a1); o.stroke();
-    }
+
+    // aro exterior blanco
+    o.lineWidth=rimW; o.strokeStyle='#ffffff';
+    o.beginPath(); o.arc(0,0,outerR+rimW*.5,0,Math.PI*2); o.stroke();
+
+    // limpia centro
     o.globalCompositeOperation='destination-out';
     o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
     o.globalCompositeOperation='source-over';
+
+    o.restore();
+    bitmap=off;
   }
-  // aro exterior blanco
-  o.lineWidth=rimW; o.strokeStyle='#ffffff';
-  o.beginPath(); o.arc(0,0,outerR+rimW*.5,0,Math.PI*2); o.stroke();
 
-  o.globalCompositeOperation='destination-out';
-  o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
-  o.globalCompositeOperation='source-over';
-
-  o.restore();
-  bitmap=off;
-}
-
-function draw(){
-  const wheel=$('wheel'); const ctx=wheel.getContext('2d');
-  if(!bitmap||bitmapSize!==sizeWheel()) buildBitmap();
-  const W=wheel.width,H=wheel.height,cx=W/2,cy=H/2;
-  ctx.clearRect(0,0,W,H); ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
-  ctx.drawImage(bitmap,-cx,-cy,W,H); ctx.restore();
-}
-
-function updatePlayerDisplay(){
-  if(!labels.length) return;
-  const randomName=labels[Math.floor(Math.random()*labels.length)];
-  $('playerDisplay').textContent=randomName;
-}
-
-/* Spin básico (sin audio) */
-function easeOutCubic(t){return 1-Math.pow(1-t,3)}
-function spin(){
-  if(spinning) return;
-  if(!labels.length){ alert('Agrega participantes o pulsa “Ir a la ruleta” para cargar demo.'); return; }
-  spinning=true;
-  const n=Math.max(1,labels.length);
-  const idx=Math.floor(Math.random()*n);
-  const ang=((idx+0.5)/n)*Math.PI*2;
-  const jitter=(Math.random()-0.5)*(Math.PI*2/n*0.2);
-  const target=-(ang+jitter);
-  const extra=10;
-  const start=rotation;
-  const finalRot=start+target+extra*(Math.PI*2);
-  const bar=$('bar');
-
-  bar.style.transition='none'; bar.style.width='0%';
-  requestAnimationFrame(()=>{bar.style.transition=`width ${duration}ms linear`; bar.style.width='100%';});
-
-  const t0=performance.now();
-  let lastDisplay=t0;
-
-  function frame(now){
-    const t=Math.min(1,(now-t0)/duration),k=easeOutCubic(t);
-    rotation=start+(finalRot-start)*k; draw();
-    if(now-lastDisplay>=30){ updatePlayerDisplay(); lastDisplay=now; }
-    if(t<1){ requestAnimationFrame(frame); }
-    else { spinning=false; $('playerDisplay').textContent=''; showWinner(labels[idx]); bar.style.transition='none'; bar.style.width='0%'; }
+  function draw(){
+    if(!bitmap || bitmapSize!==sizeWheel()) buildBitmap();
+    const W=wheel.width,H=wheel.height,cx=W/2,cy=H/2;
+    ctx.clearRect(0,0,W,H); ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
+    ctx.drawImage(bitmap,-cx,-cy,W,H); ctx.restore();
   }
-  requestAnimationFrame(frame);
-}
 
-function showWinner(name){
-  $('win').textContent=name;
-  $('avatar').src='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110" viewBox="0 0 110 110"><rect width="110" height="110" rx="55" fill="#f0f2f7"/><text x="55" y="58" font-size="32" text-anchor="middle" fill="#9aa0a6">👤</text></svg>');
-  document.getElementById('m').classList.add('show');
-}
-function closeModal(){ document.getElementById('m').classList.remove('show'); }
+  function toRoulette(){
+    labels=parseInput(); setKPI(); setCounter();
+    if(!labels.length){
+      // demo para asegurar navegación
+      ta.value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
+      labels=parseInput(); setKPI(); setCounter();
+    }
+    buildBitmap(); rotation=0; draw();
+    setup.setAttribute('aria-hidden','true');
+    roulette.setAttribute('aria-hidden','false');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 
-/* Inicialización */
-(function init(){
-  setDuration(2000, document.querySelector('.seg button[data-sec="2"]'));
-  updatePreview();
+  function backToSetup(){
+    roulette.setAttribute('aria-hidden','true');
+    setup.setAttribute('aria-hidden','false');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+  function updatePlayerDisplay(){
+    if(!labels.length) return;
+    const randomName=labels[Math.floor(Math.random()*labels.length)];
+    document.getElementById('playerDisplay').textContent=randomName;
+  }
+
+  function spin(){
+    if(spinning) return;
+    if(!labels.length){ alert('Agrega participantes o pulsa “Ir a la ruleta” para cargar una demo.'); return; }
+    spinning=true;
+    const n=Math.max(1,labels.length);
+    const idx=Math.floor(Math.random()*n);
+    const ang=((idx+0.5)/n)*Math.PI*2;
+    const jitter=(Math.random()-0.5)*(Math.PI*2/n*0.2);
+    const target=-(ang+jitter);
+    const extra=10;
+    const start=rotation;
+    const finalRot=start+target+extra*(Math.PI*2);
+
+    bar.style.transition='none'; bar.style.width='0%';
+    requestAnimationFrame(()=>{bar.style.transition=`width ${duration}ms linear`; bar.style.width='100%';});
+
+    const t0=performance.now(); let lastDisp=t0;
+    function frame(now){
+      const t=Math.min(1,(now-t0)/duration),k=easeOutCubic(t);
+      rotation=start+(finalRot-start)*k; draw();
+      if(now-lastDisp>=30){ updatePlayerDisplay(); lastDisp=now; }
+      if(t<1){ requestAnimationFrame(frame); }
+      else{
+        spinning=false;
+        document.getElementById('playerDisplay').textContent='';
+        winEl.textContent=labels[idx];
+        modal.classList.add('show');
+        bar.style.transition='none'; bar.style.width='0%';
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---- eventos (seguros)
+  previewBtn.addEventListener('click', updatePreview);
+  next.addEventListener('click', toRoulette);
+  back.addEventListener('click', backToSetup);
+  spinBtn.addEventListener('click', spin);
+  centerBtn.addEventListener('click', spin);
+  centerBtn.addEventListener('keydown', e => {
+    if(e.key==='Enter'||e.key===' '||e.code==='Space'){ e.preventDefault(); spin(); }
+  });
+  document.getElementById('close').addEventListener('click', ()=>modal.classList.remove('show'));
+
+  // selector de duración
+  document.querySelectorAll('.seg button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.seg button').forEach(x=>x.removeAttribute('aria-pressed'));
+      b.setAttribute('aria-pressed','true');
+      duration = Math.max(800, parseInt(b.dataset.sec,10)*1000);
+    });
+  });
+
+  // resize mantiene el círculo perfecto
   window.addEventListener('resize', ()=>{ bitmap=null; draw(); });
-})();
+
+  // arranque
+  updatePreview(); // para que el KPI y la lista muestren algo
+});
 </script>
 </body>
 </html>
