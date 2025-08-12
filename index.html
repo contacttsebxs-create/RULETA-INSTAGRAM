@@ -5,25 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RULETA INSTAGRAM</title>
 <style>
-:root{
-  --bg:#797cd0;   /* fondo morado */
-  --ink:#0b0f19;
-  --card:#ffffff;
-  --muted:#5b6676;
-  --accent:#6f72c2; /* acento/puntero */
-}
+:root{--bg:#797cd0;--ink:#0b0f19;--card:#ffffff;--muted:#5b6676;--accent:#6f72c2}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-
 .wrap{max-width:980px;margin:12px auto;padding:0 12px}
-
-/* tarjeta genérica para que el setup SIEMPRE se vea */
 .card{background:#fff;border:1px solid #e7ecf7;border-radius:16px;padding:14px}
-
-/* ruleta ocupa alto cómodo y sin bordes de tarjeta */
 #roulette.card{max-width:none;border-radius:0;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;height:calc(100vh - 24px);background:transparent}
-
 .small{font-size:13px;color:var(--muted)}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 button{appearance:none;border:1px solid #cdd3df;background:#fff;color:#0b0f19;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.07)}
@@ -39,73 +27,30 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .item{display:flex;align-items:center;gap:8px;background:#f8f9fe;border:1px solid #e7ecf7;border-radius:10px;padding:6px 8px}
 .item .tag{font-size:12px;opacity:.85;padding:2px 6px;border-radius:999px;background:#e9eefb}
 
-/* Ruleta perfectamente redonda */
-.canvas-wrap{
-  position:relative;
-  margin:12px auto 8px;
-  max-width:600px;           /* tamaño final de la ruleta */
-  aspect-ratio:1/1;          /* contenedor cuadrado */
-  flex-grow:1;
-  display:flex;align-items:center;justify-content:center
-}
-#wheel{
-  display:block;
-  width:100% !important;
-  height:100% !important;     /* evita óvalo */
-  filter:drop-shadow(0 10px 24px rgba(0,0,0,.12))
-}
-
-/* botón central */
-.centerBadge{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;
-  display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;
-  box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);
-  cursor:pointer;user-select:none;outline:none;transition:transform .15s ease,box-shadow .2s ease
-}
-.centerBadge:hover{transform:translate(-50%,-50%) scale(1.05)}
-.centerBadge:active{transform:translate(-50%,-50%) scale(.98)}
-
-/* barra de progreso */
+/* Ruleta redonda */
+.canvas-wrap{position:relative;margin:12px auto 8px;max-width:600px;aspect-ratio:1/1;flex-grow:1;display:flex;align-items:center;justify-content:center}
+#wheel{display:block;width:100%!important;height:100%!important;filter:drop-shadow(0 10px 24px rgba(0,0,0,.12))}
+.centerBadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);cursor:pointer;user-select:none;outline:none}
 .progress{height:8px;background:#edf0f7;border:1px solid #e3e7f2;border-radius:999px;overflow:hidden}
 .progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#6f72c2,#a7afdf)}
 .counter{font-size:13px;color:#444;margin-top:6px}
-
-/* nombre del jugador */
-#playerDisplay{
-  font-size:22px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.95);
-  padding:10px 18px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);
-  min-width:250px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  margin:0 auto 14px;max-width:600px
-}
-
-/* puntero */
-.pointer{
-  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
-  width:0;height:0;border-left:20px solid transparent;border-right:20px solid var(--accent);
-  border-top:20px solid transparent;border-bottom:20px solid transparent;
-  pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(111,114,194,.6))
-}
-
-/* modal */
+#playerDisplay{font-size:22px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.95);padding:10px 18px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);min-width:250px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 auto 14px;max-width:600px}
+.pointer{position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:20px solid transparent;border-right:20px solid var(--accent);border-top:20px solid transparent;border-bottom:20px solid transparent;pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(111,114,194,.6))}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;justify-content:center;align-items:center;z-index:1000}
 .modal.show{display:flex}
 .modal-card{position:relative;background:#fff;border:1px solid #e5e7ee;border-radius:14px;padding:18px 16px;text-align:center;min-width:min(520px,92vw);color:#0b0f19;box-shadow:0 18px 60px rgba(0,0,0,.15)}
 .modal-card h3{margin:0 0 6px}
 .modal-card .avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #f0f2f7;box-shadow:0 6px 16px rgba(0,0,0,.15);background:#f3f5f9;margin:8px auto 10px;display:block}
 .modal-card .win{font-size:26px;font-weight:800}
-
-/* ocultar títulos internos */
 #setup h2,#roulette h2{display:none}
 #setup[aria-hidden="true"],#roulette[aria-hidden="true"]{display:none!important}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- Título visual eliminado -->
     <section id="setup" class="card" aria-hidden="false">
       <h2>1) Configuración</h2>
-      <p class="small">Pega hasta <b>5.000</b> líneas (una por participante). Puedes usar <b>xN</b> (ej.: Juan x3). Comas, punto y coma y tabs separan dentro de una línea.</p>
+      <p class="small">Pega hasta <b>5.000</b> líneas (una por participante). También puedes usar <b>xN</b> (ej.: Juan x3).</p>
       <textarea id="ta" placeholder="@usuario
 usuario
 https://www.instagram.com/handle/"></textarea>
@@ -118,7 +63,8 @@ https://www.instagram.com/handle/"></textarea>
         <span id="kpi" class="kpi">0 líneas</span>
         <div style="margin-left:auto">
           <button id="preview" class="ghost" type="button">Vista previa</button>
-          <button id="next" class="primary" type="button" disabled>Ir a la ruleta →</button>
+          <!-- AHORA SIEMPRE ACTIVO -->
+          <button id="next" class="primary" type="button">Ir a la ruleta →</button>
         </div>
       </div>
       <div id="previewList" class="list"></div>
@@ -158,286 +104,240 @@ https://www.instagram.com/handle/"></textarea>
     </div>
   </div>
 
-  <script>
-  (function(){
-    const setup=document.getElementById('setup');
-    const roulette=document.getElementById('roulette');
-    const ta=document.getElementById('ta');
-    const kpi=document.getElementById('kpi');
-    const previewList=document.getElementById('previewList');
-    const next=document.getElementById('next');
-    const back=document.getElementById('back');
-    const previewBtn=document.getElementById('preview');
-    const spinBtn=document.getElementById('spin');
-    const centerBtn=document.getElementById('centerBtn');
-    const bar=document.getElementById('bar');
-    const lineCounter=document.getElementById('lineCounter');
-    const closeBtn=document.getElementById('close');
-    const wheel=document.getElementById('wheel');
-    const ctx=wheel.getContext('2d');
-    const secBtns=Array.from(document.querySelectorAll('.seg button'));
-    const audioHint=document.getElementById('audioHint');
-    const modal=document.getElementById('m');
-    const winEl=document.getElementById('win');
-    const avatarEl=document.getElementById('avatar');
-    const playerDisplay=document.getElementById('playerDisplay');
+<script>
+(function(){
+  const setup = document.getElementById('setup');
+  const roulette = document.getElementById('roulette');
+  const ta = document.getElementById('ta');
+  const kpi = document.getElementById('kpi');
+  const previewList = document.getElementById('previewList');
+  const next = document.getElementById('next');
+  const back = document.getElementById('back');
+  const previewBtn = document.getElementById('preview');
+  const spinBtn = document.getElementById('spin');
+  const centerBtn = document.getElementById('centerBtn');
+  const bar = document.getElementById('bar');
+  const lineCounter = document.getElementById('lineCounter');
+  const closeBtn = document.getElementById('close');
+  const wheel = document.getElementById('wheel');
+  const ctx = wheel.getContext('2d');
+  const secBtns = Array.from(document.querySelectorAll('.seg button'));
+  const audioHint = document.getElementById('audioHint');
+  const modal = document.getElementById('m');
+  const winEl = document.getElementById('win');
+  const avatarEl = document.getElementById('avatar');
+  const playerDisplay = document.getElementById('playerDisplay');
 
-    const LIMIT=5000;
-    let labels=[];
-    let rotation=0;
-    let spinning=false;
-    let duration=2000;
-    let bitmap=null,bitmapSize=0;
-    let audioCtx=null;
+  const LIMIT=5000;
+  let labels=[], rotation=0, spinning=false, duration=2000, bitmap=null, bitmapSize=0, audioCtx=null;
 
-    function ensureAudio(){
-      if(audioCtx)return;
-      try{
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-        if(audioCtx.state==='suspended')audioCtx.resume();
-        audioHint.textContent='🔈 Sonido activado.';
-      }catch(e){
-        audioHint.textContent='⚠️ El audio no pudo inicializarse en este navegador.';
+  function ensureAudio(){
+    if(audioCtx) return;
+    try{
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      audioHint.textContent='🔈 Sonido activado.';
+    }catch(e){ audioHint.textContent='⚠️ El audio no pudo inicializarse en este navegador.'; }
+  }
+  ['pointerdown','touchstart','click','keydown'].forEach(ev=>{
+    document.addEventListener(ev,()=>ensureAudio(),{once:true,passive:true});
+  });
+
+  function setKPI(){kpi.textContent=labels.length+' líneas'}
+  function setCounter(){lineCounter.textContent='Número de comentarios: '+new Intl.NumberFormat('es-CO').format(labels.length)}
+
+  function parseInput(){
+    let raw=(ta.value||'').replace(/\r\n?/g,'\n');
+    const lines=raw.split('\n'), out=[];
+    outer: for(let i=0;i<lines.length;i++){
+      const parts=lines[i].split(/[;,\t]+/);
+      for(let j=0;j<parts.length;j++){
+        let p=parts[j].trim(); if(!p) continue;
+        const m=p.match(/^(.*?)(?:\s*[xX]\s*(\d+))?$/);
+        const name=(m?m[1]:p).trim();
+        const n=(m&&m[2])?Math.min(LIMIT,Math.max(1,parseInt(m[2],10))):1;
+        for(let k=0;k<n;k++){ out.push(name); if(out.length>=LIMIT) break outer; }
       }
     }
-    ['pointerdown','touchstart','click','keydown'].forEach(ev=>{
-      document.addEventListener(ev,()=>ensureAudio(),{once:true,passive:true});
-    });
+    return out;
+  }
 
-    function playTick(vol){
-      if(!audioCtx)return;
-      const t=audioCtx.currentTime;
-      const g=audioCtx.createGain();g.connect(audioCtx.destination);g.gain.value=0;
-      const o=audioCtx.createOscillator();o.type='square';o.frequency.value=1500;o.connect(g);
-      g.gain.setValueAtTime(0,t);
-      g.gain.linearRampToValueAtTime(0.18*(vol||1),t+0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
-      o.start(t);o.stop(t+0.06);
-
-      const o2=audioCtx.createOscillator();const g2=audioCtx.createGain();
-      o2.type='triangle';o2.frequency.value=140;g2.gain.value=0;o2.connect(g2).connect(audioCtx.destination);
-      g2.gain.setValueAtTime(0,t);
-      g2.gain.linearRampToValueAtTime(0.06*(vol||1),t+0.004);
-      g2.gain.exponentialRampToValueAtTime(0.0001,t+0.07);
-      o2.start(t);o2.stop(t+0.08);
+  function updatePreview(){
+    labels=parseInput(); setKPI();
+    const freq={}; labels.forEach(n=>freq[n]=(freq[n]||0)+1);
+    const arr=Object.keys(freq).map(n=>({name:n,c:freq[n]})).sort((a,b)=>b.c-a.c).slice(0,12);
+    previewList.innerHTML='';
+    if(!labels.length){ const it=document.createElement('div'); it.className='small'; it.textContent='No hay datos aún.'; previewList.appendChild(it); return; }
+    for(const a of arr){
+      const d=document.createElement('div'); d.className='item';
+      const n=document.createElement('div'); n.textContent=a.name; n.style.flex='1';
+      const t=document.createElement('div'); t.className='tag'; t.textContent='x'+a.c;
+      d.appendChild(n); d.appendChild(t); previewList.appendChild(d);
     }
-    function playWin(){
-      if(!audioCtx)return;
-      const now=audioCtx.currentTime;
-      [880,1174.66,1567.98].forEach((f,i)=>{
-        const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-        o.type='sine';o.frequency.value=f;g.gain.value=0;o.connect(g).connect(audioCtx.destination);
-        const t0=now+i*0.08;
-        g.gain.setValueAtTime(0,t0);
-        g.gain.linearRampToValueAtTime(0.35,t0+0.03);
-        g.gain.exponentialRampToValueAtTime(0.0001,t0+0.45);
-        o.start(t0);o.stop(t0+0.5);
-      });
-    }
+  }
+  ta.addEventListener('input',updatePreview);
 
-    const fmt=new Intl.NumberFormat('es-CO');
-    function setKPI(){kpi.textContent=labels.length+' líneas';}
-    function setCounter(){lineCounter.textContent='Número de comentarios: '+fmt.format(labels.length);}
+  function sizeWheel(){
+    const wrap=document.querySelector('.canvas-wrap');
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    const sideCSS=wrap.clientWidth;
+    const side=Math.floor(sideCSS*dpr);
+    wheel.width=side; wheel.height=side;
+    return side;
+  }
 
-    function parseInput(){
-      let raw=(ta.value||'').replace(/\r\n?/g,'\n');
-      const lines=raw.split('\n');const out=[];
-      outer: for(let i=0;i<lines.length;i++){
-        const parts=lines[i].split(/[;,\t]+/);
-        for(let j=0;j<parts.length;j++){
-          let p=parts[j].trim();if(!p)continue;
-          const m=p.match(/^(.*?)(?:\s*[xX]\s*(\d+))?$/);
-          const name=(m?m[1]:p).trim();
-          const n=(m&&m[2])?Math.min(LIMIT,Math.max(1,parseInt(m[2],10))):1;
-          for(let k=0;k<n;k++){ out.push(name); if(out.length>=LIMIT)break outer; }
-        }
+  function buildBitmap(){
+    const px=sizeWheel(); bitmapSize=px;
+    const off=document.createElement('canvas'); off.width=px; off.height=px; const o=off.getContext('2d');
+    const W=px,H=px,cx=W/2,cy=H/2;
+    const outerR=Math.min(cx,cy)*.94, innerR=Math.min(cx,cy)*.28, rimW=Math.max(2,Math.floor(px*.012));
+    o.clearRect(0,0,W,H); o.save(); o.translate(cx,cy);
+
+    const palette=['#f6f1f4','#a7afdf','#aec4e7','#959bd9'];
+    const n=Math.max(1,labels.length||1);
+    if(n>=300){
+      for(let i=0;i<n;i++){
+        const ang=(i/n)*Math.PI*2, col=palette[i%palette.length];
+        o.beginPath();
+        const x1=Math.cos(ang)*innerR,y1=Math.sin(ang)*innerR,x2=Math.cos(ang)*outerR,y2=Math.sin(ang)*outerR;
+        o.strokeStyle=col; o.lineWidth=Math.max(1,px*.0012);
+        o.moveTo(x1,y1); o.lineTo(x2,y2); o.stroke();
       }
-      return out;
-    }
-
-    function updatePreview(){
-      labels=parseInput();setKPI();next.disabled=labels.length===0;
-      const freq={};labels.forEach(n=>freq[n]=(freq[n]||0)+1);
-      const arr=Object.keys(freq).map(n=>({name:n,c:freq[n]})).sort((a,b)=>b.c-a.c).slice(0,12);
-      previewList.innerHTML='';
-      if(!labels.length){
-        const it=document.createElement('div');it.className='small';it.textContent='No hay datos aún.';previewList.appendChild(it);return;
+      const ring=o.createRadialGradient(0,0,innerR*.98,0,0,outerR);
+      ring.addColorStop(0,'rgba(0,0,0,.22)'); ring.addColorStop(1,'rgba(0,0,0,.07)');
+      o.beginPath(); o.arc(0,0,outerR,0,Math.PI*2); o.arc(0,0,innerR,0,Math.PI*2,true); o.closePath(); o.fillStyle=ring; o.fill();
+    }else{
+      const angPer=Math.PI*2/n; let a=0;
+      for(let i=0;i<n;i++){
+        const a0=a,a1=a+angPer; a=a1;
+        const base=palette[i%palette.length];
+        const g=o.createLinearGradient(0,-outerR,0,outerR);
+        g.addColorStop(0,base); g.addColorStop(1,'rgba(0,0,0,.08)');
+        o.beginPath(); o.moveTo(0,0); o.arc(0,0,outerR,a0,a1); o.closePath(); o.fillStyle=g; o.fill();
+        o.strokeStyle='rgba(0,0,0,.18)'; o.lineWidth=Math.max(1,px*.002);
+        o.beginPath(); o.arc(0,0,outerR,a1-0.001,a1); o.stroke();
       }
-      for(const a of arr){
-        const d=document.createElement('div');d.className='item';
-        const n=document.createElement('div');n.textContent=a.name;n.style.flex='1';
-        const t=document.createElement('div');t.className='tag';t.textContent='x'+a.c;
-        d.appendChild(n);d.appendChild(t);previewList.appendChild(d);
-      }
-    }
-    ta.addEventListener('input',updatePreview);
-
-    /* canvas cuadrado real (anti-óvalo) */
-    function sizeWheel(){
-      const wrap=document.querySelector('.canvas-wrap');
-      const dpr=Math.max(1,window.devicePixelRatio||1);
-      const sideCSS=wrap.clientWidth;        // ancho del contenedor (es cuadrado)
-      const side=Math.floor(sideCSS*dpr);
-      wheel.width=side;
-      wheel.height=side;
-      return side;
-    }
-
-    function buildBitmap(){
-      const px=sizeWheel();bitmapSize=px;
-      const off=document.createElement('canvas');off.width=px;off.height=px;const o=off.getContext('2d');
-      const W=px,H=px,cx=W/2,cy=H/2;
-      const outerR=Math.min(cx,cy)*.94;const innerR=Math.min(cx,cy)*.28;const rimW=Math.max(2,Math.floor(px*.012));
-      o.clearRect(0,0,W,H);o.save();o.translate(cx,cy);
-
-      /* paleta de tu imagen */
-      const palette = ['#f6f1f4','#a7afdf','#aec4e7','#959bd9'];
-
-      const n=Math.max(1,labels.length||1);
-      if(n>=300){
-        for(let i=0;i<n;i++){
-          const ang=(i/n)*Math.PI*2,col=palette[i%palette.length];
-          o.beginPath();
-          const x1=Math.cos(ang)*innerR,y1=Math.sin(ang)*innerR,x2=Math.cos(ang)*outerR,y2=Math.sin(ang)*outerR;
-          o.strokeStyle=col;o.lineWidth=Math.max(1,px*.0012);
-          o.moveTo(x1,y1);o.lineTo(x2,y2);o.stroke();
-        }
-        const ring=o.createRadialGradient(0,0,innerR*.98,0,0,outerR);
-        ring.addColorStop(0,'rgba(0,0,0,.22)');ring.addColorStop(1,'rgba(0,0,0,.07)');
-        o.beginPath();o.arc(0,0,outerR,0,Math.PI*2);o.arc(0,0,innerR,0,Math.PI*2,true);o.closePath();o.fillStyle=ring;o.fill();
-      }else{
-        const angPer=Math.PI*2/n;let a=0;
-        for(let i=0;i<n;i++){
-          const a0=a,a1=a+angPer;a=a1;
-          const base=palette[i%palette.length];
-          const g=o.createLinearGradient(0,-outerR,0,outerR);
-          g.addColorStop(0,base);g.addColorStop(1,'rgba(0,0,0,.08)');
-          o.beginPath();o.moveTo(0,0);o.arc(0,0,outerR,a0,a1);o.closePath();o.fillStyle=g;o.fill();
-          o.strokeStyle='rgba(0,0,0,.18)';o.lineWidth=Math.max(1,px*.002);
-          o.beginPath();o.arc(0,0,outerR,a1-0.001,a1);o.stroke();
-        }
-        o.globalCompositeOperation='destination-out';
-        o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
-        o.globalCompositeOperation='source-over';
-      }
-
-      /* aro exterior blanco como en tu captura */
-      o.lineWidth=rimW;o.strokeStyle='#ffffff';
-      o.beginPath();o.arc(0,0,outerR+rimW*.5,0,Math.PI*2);o.stroke();
-
       o.globalCompositeOperation='destination-out';
-      o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
+      o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
       o.globalCompositeOperation='source-over';
-
-      o.restore();
-      bitmap=off;
     }
+    o.lineWidth=rimW; o.strokeStyle='#ffffff';
+    o.beginPath(); o.arc(0,0,outerR+rimW*.5,0,Math.PI*2); o.stroke();
 
-    function draw(){
-      if(!bitmap||bitmapSize!==sizeWheel())buildBitmap();
-      const W=wheel.width,H=wheel.height,cx=W/2,cy=H/2;
-      ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);
-      ctx.drawImage(bitmap,-cx,-cy,W,H);ctx.restore();
+    o.globalCompositeOperation='destination-out';
+    o.beginPath(); o.arc(0,0,innerR,0,Math.PI*2); o.fill();
+    o.globalCompositeOperation='source-over';
+
+    o.restore();
+    bitmap=off;
+  }
+
+  function draw(){
+    if(!bitmap||bitmapSize!==sizeWheel()) buildBitmap();
+    const W=wheel.width,H=wheel.height,cx=W/2,cy=H/2;
+    ctx.clearRect(0,0,W,H); ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotation);
+    ctx.drawImage(bitmap,-cx,-cy,W,H); ctx.restore();
+  }
+
+  function toRoulette(){
+    labels=parseInput(); setKPI(); setCounter();
+    if(!labels.length){ return false; }
+    buildBitmap(); rotation=0; draw();
+    setup.setAttribute('aria-hidden','true'); roulette.setAttribute('aria-hidden','false');
+    window.scrollTo({top:0,behavior:'smooth'}); return true;
+  }
+
+  function backToSetup(){
+    roulette.setAttribute('aria-hidden','true'); setup.setAttribute('aria-hidden','false');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  const PLACEHOLDER='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110" viewBox="0 0 110 110"><rect width="110" height="110" rx="55" fill="#f0f2f7"/><text x="55" y="58" font-size="32" text-anchor="middle" fill="#9aa0a6">👤</text></svg>');
+  function extractInstagramHandle(text){
+    if(!text) return null; text=String(text).trim().replace(/\/+$/,'');
+    let m=text.match(/instagram\.com\/([A-Za-z0-9._]+)/i); if(m&&m[1]) return m[1];
+    m=text.match(/@([A-Za-z0-9._]+)/); if(m&&m[1]) return m[1];
+    if(/^[A-Za-z0-9._]+$/.test(text)) return text;
+    return null;
+  }
+  async function setAvatarFor(name){
+    const handle=extractInstagramHandle(name); const img=avatarEl;
+    if(!handle){ img.src=PLACEHOLDER; return; }
+    const url=`https://unavatar.io/instagram/${encodeURIComponent(handle)}?_=${Date.now()}`;
+    try{
+      const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),6000);
+      const res=await fetch(url,{cache:'no-store',mode:'cors',redirect:'follow',signal:ctrl.signal});
+      clearTimeout(t); if(!res.ok) throw new Error('HTTP '+res.status);
+      const blob=await res.blob(); const objectURL=URL.createObjectURL(blob);
+      img.onload=()=>URL.revokeObjectURL(objectURL); img.onerror=()=>{img.src=PLACEHOLDER}; img.src=objectURL;
+    }catch(e){ img.src=PLACEHOLDER; }
+  }
+
+  function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+  function updatePlayerDisplay(){ if(!labels.length) return; const randomName=labels[Math.floor(Math.random()*labels.length)]; playerDisplay.textContent=randomName; }
+
+  function spin(){
+    if(spinning) return;
+    if(!labels.length){ if(!forceDemoAndGo()) return; }
+    ensureAudio(); spinning=true;
+    const n=Math.max(1,labels.length);
+    const idx=Math.floor(Math.random()*n);
+    const ang=((idx+0.5)/n)*Math.PI*2;
+    const jitter=(Math.random()-0.5)*(Math.PI*2/n*0.2);
+    const target=-(ang+jitter);
+    const extra=10;
+    const start=rotation;
+    const finalRot=start+target+extra*(Math.PI*2);
+
+    bar.style.transition='none'; bar.style.width='0%';
+    requestAnimationFrame(()=>{bar.style.transition=`width ${duration}ms linear`; bar.style.width='100%';});
+
+    const t0=performance.now();
+    let lastTick=t0, lastDisplayUpdate=t0;
+
+    function frame(now){
+      const t=Math.min(1,(now-t0)/duration),k=easeOutCubic(t);
+      rotation=start+(finalRot-start)*k; draw();
+      const interval=25+195*Math.pow(t,.7);
+      if(now-lastTick>=interval){ lastTick=now; }
+      if(now-lastDisplayUpdate>=30){ updatePlayerDisplay(); lastDisplayUpdate=now; }
+      if(t<1){ requestAnimationFrame(frame); } else { onStop(labels[idx]); }
     }
+    requestAnimationFrame(frame);
+  }
 
-    function toRoulette(){
-      labels=parseInput();setKPI();setCounter();
-      if(!labels.length){alert('Pega al menos una línea');return false;}
-      buildBitmap();rotation=0;draw();
-      setup.setAttribute('aria-hidden','true');roulette.setAttribute('aria-hidden','false');
-      window.scrollTo({top:0,behavior:'smooth'});return true;
-    }
-    function backToSetup(){
-      roulette.setAttribute('aria-hidden','true');setup.setAttribute('aria-hidden','false');
-      window.scrollTo({top:0,behavior:'smooth'})
-    }
+  function onStop(name){
+    spinning=false;
+    playerDisplay.textContent='';
+    setAvatarFor(name);
+    winEl.textContent=name;
+    modal.classList.add('show');
+    bar.style.transition='none'; bar.style.width='0%';
+  }
 
-    const PLACEHOLDER='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110" viewBox="0 0 110 110"><rect width="110" height="110" rx="55" fill="#f0f2f7"/><text x="55" y="58" font-size="32" text-anchor="middle" fill="#9aa0a6">👤</text></svg>');
-    function extractInstagramHandle(text){
-      if(!text)return null;text=String(text).trim().replace(/\/+$/,'');
-      let m=text.match(/instagram\.com\/([A-Za-z0-9._]+)/i);if(m&&m[1])return m[1];
-      m=text.match(/@([A-Za-z0-9._]+)/);if(m&&m[1])return m[1];
-      if(/^[A-Za-z0-9._]+$/.test(text))return text;return null;
-    }
-    async function setAvatarFor(name){
-      const handle=extractInstagramHandle(name);const img=avatarEl;
-      if(!handle){img.src=PLACEHOLDER;return;}
-      const url=`https://unavatar.io/instagram/${encodeURIComponent(handle)}?_=${Date.now()}`;
-      try{
-        const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),6000);
-        const res=await fetch(url,{cache:'no-store',mode:'cors',redirect:'follow',signal:ctrl.signal});
-        clearTimeout(t);if(!res.ok)throw new Error('HTTP '+res.status);
-        const blob=await res.blob();const objectURL=URL.createObjectURL(blob);
-        img.onload=()=>URL.revokeObjectURL(objectURL);img.onerror=()=>{img.src=PLACEHOLDER};img.src=objectURL;
-      }catch(e){img.src=PLACEHOLDER;}
-    }
-
-    function easeOutCubic(t){return 1-Math.pow(1-t,3)}
-    function updatePlayerDisplay(){
-      const randomName=labels[Math.floor(Math.random()*labels.length)];
-      playerDisplay.textContent=randomName;
-    }
-
-    function spin(){
-      if(spinning)return;
-      if(!labels.length){if(!toRoulette())return;}
-      ensureAudio();spinning=true;
-      const n=Math.max(1,labels.length);
-      const idx=Math.floor(Math.random()*n);
-      const ang=((idx+0.5)/n)*Math.PI*2;
-      const jitter=(Math.random()-0.5)*(Math.PI*2/n*0.2);
-      const target=-(ang+jitter);
-      const extra=10;
-      const start=rotation;
-      const finalRot=start+target+extra*(Math.PI*2);
-
-      bar.style.transition='none';bar.style.width='0%';
-      requestAnimationFrame(()=>{bar.style.transition=`width ${duration}ms linear`;bar.style.width='100%'});
-
-      const t0=performance.now();
-      let lastTick=t0;let lastDisplayUpdate=t0;
-
-      function frame(now){
-        const t=Math.min(1,(now-t0)/duration),k=easeOutCubic(t);
-        rotation=start+(finalRot-start)*k;draw();
-        const interval=25+195*Math.pow(t,.7);
-        if(now-lastTick>=interval){playTick(.9-.6*t);lastTick=now;}
-        if(now-lastDisplayUpdate>=30){updatePlayerDisplay();lastDisplayUpdate=now;}
-        if(t<1){requestAnimationFrame(frame);}else{onStop(labels[idx]);}
-      }
-      requestAnimationFrame(frame);
-    }
-
-    function onStop(name){
-      spinning=false;playWin();
-      playerDisplay.textContent='';
-      setAvatarFor(name);
-      winEl.textContent=name;
-      modal.classList.add('show');
-      bar.style.transition='none';bar.style.width='0%';
-    }
-
-    /* eventos */
-    previewBtn.addEventListener('click',updatePreview);
-    ta.addEventListener('input',updatePreview);
-    next.addEventListener('click',toRoulette);
-    back.addEventListener('click',backToSetup);
-    spinBtn.addEventListener('click',spin);
-    centerBtn.addEventListener('click',spin);
-    centerBtn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '||e.code==='Space'){e.preventDefault();spin();}});
-    closeBtn.addEventListener('click',()=>modal.classList.remove('show'));
-    secBtns.forEach(b=>b.addEventListener('click',()=>{secBtns.forEach(x=>x.removeAttribute('aria-pressed'));b.setAttribute('aria-pressed','true');duration=Math.max(800,parseInt(b.dataset.sec,10)*1000);}));
-    window.addEventListener('resize',()=>{bitmap=null;draw();});
-
-    /* demo inicial para que VEAS algo de una */
+  function forceDemoAndGo(){
+    // Carga demo y entra
     ta.value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
     updatePreview();
-    secBtns.find(b=>b.dataset.sec==='2').click();
-  })();
-  </script>
+    return toRoulette();
+  }
 
-  <noscript style="display:block;text-align:center;color:#fff;padding:14px">
-    Activa JavaScript para ver la ruleta.
-  </noscript>
+  // === Eventos ===
+  previewBtn.addEventListener('click',updatePreview);
+  next.addEventListener('click',()=>{ if(!toRoulette()){ forceDemoAndGo(); } });
+  back.addEventListener('click',backToSetup);
+  spinBtn.addEventListener('click',spin);
+  centerBtn.addEventListener('click',spin);
+  centerBtn.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '||e.code==='Space'){ e.preventDefault(); spin(); }});
+  closeBtn.addEventListener('click',()=>modal.classList.remove('show'));
+  secBtns.forEach(b=>b.addEventListener('click',()=>{ secBtns.forEach(x=>x.removeAttribute('aria-pressed')); b.setAttribute('aria-pressed','true'); duration=Math.max(800,parseInt(b.dataset.sec,10)*1000); }));
+  window.addEventListener('resize',()=>{ bitmap=null; draw(); });
+
+  // Sin depender de autovalores ni bloquear el botón
+  updatePreview();
+  // Selecciona 2s por defecto
+  const s2=secBtns.find(b=>b.dataset.sec==='2'); if(s2){ s2.setAttribute('aria-pressed','true'); duration=2000; }
+})();
+</script>
 </body>
 </html>
