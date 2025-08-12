@@ -1,15 +1,3 @@
-¡Hecho! Apliqué la paleta de tu captura y dejé la ruleta perfectamente redonda.
-
-Cambios clave:
-
-* Fondo morado `#797cd0`.
-* Paleta de slices: `#f6f1f4`, `#a7afdf`, `#aec4e7`, `#959bd9`.
-* Acento/puntero en `#6f72c2`.
-* Fijé el canvas para que nunca se vea ovalado (mismo ancho/alto en CSS y en los atributos del `<canvas>`).
-
-Pega esto completo:
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,29 +6,24 @@ Pega esto completo:
 <title>RULETA INSTAGRAM</title>
 <style>
 :root{
-  --bg:#797cd0;          /* morado de fondo */
+  --bg:#797cd0;   /* fondo morado */
   --ink:#0b0f19;
   --card:#ffffff;
   --muted:#5b6676;
-  --pointer:#9aa0a6;
-  --accent:#6f72c2;      /* acento acorde a la paleta */
+  --accent:#6f72c2; /* acento/puntero */
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif
-}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
 
-/* Márgenes ajustados */
 .wrap{max-width:980px;margin:12px auto;padding:0 12px}
 
-/* Altura ajustada para aprovechar pantalla */
-#roulette.card{max-width:none;border-radius:0;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;height:calc(100vh - 24px)}
+/* tarjeta genérica para que el setup SIEMPRE se vea */
+.card{background:#fff;border:1px solid #e7ecf7;border-radius:16px;padding:14px}
 
-h1,h2{margin:0 0 10px}
+/* ruleta ocupa alto cómodo y sin bordes de tarjeta */
+#roulette.card{max-width:none;border-radius:0;border:none;box-shadow:none;padding:0;display:flex;flex-direction:column;align-items:center;height:calc(100vh - 24px);background:transparent}
+
 .small{font-size:13px;color:var(--muted)}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 button{appearance:none;border:1px solid #cdd3df;background:#fff;color:#0b0f19;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.07)}
@@ -56,59 +39,55 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .item{display:flex;align-items:center;gap:8px;background:#f8f9fe;border:1px solid #e7ecf7;border-radius:10px;padding:6px 8px}
 .item .tag{font-size:12px;opacity:.85;padding:2px 6px;border-radius:999px;background:#e9eefb}
 
-/* Ruleta: tamaño y forma perfectos (nunca ovalada) */
+/* Ruleta perfectamente redonda */
 .canvas-wrap{
   position:relative;
   margin:12px auto 8px;
-  max-width:600px;       /* un poco más pequeña */
-  aspect-ratio:1/1;      /* contenedor cuadrado */
+  max-width:600px;           /* tamaño final de la ruleta */
+  aspect-ratio:1/1;          /* contenedor cuadrado */
   flex-grow:1;
-  display:flex;
-  align-items:center;
-  justify-content:center
+  display:flex;align-items:center;justify-content:center
 }
 #wheel{
   display:block;
-  width:100% !important;   /* cuadrado en CSS */
-  height:100% !important;  /* evita óvalo */
-  filter:drop-shadow(0 10px 24px rgba(0,0,0,.1))
+  width:100% !important;
+  height:100% !important;     /* evita óvalo */
+  filter:drop-shadow(0 10px 24px rgba(0,0,0,.12))
 }
-.centerBadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);cursor:pointer;user-select:none;outline:none;transition:transform .15s ease,box-shadow .2s ease}
-.centerBadge:hover{transform:translate(-50%,-50%)scale(1.05);box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),inset 0 0 0 22px #2b2d34,0 12px 30px rgba(0,0,0,.22),0 0 0 8px rgba(111,114,194,.18)}
-.centerBadge:active{transform:translate(-50%,-50%)scale(.98)}
-.centerBadge:focus-visible{box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),0 0 0 10px rgba(111,114,194,.35)}
 
-/* Barra de progreso */
+/* botón central */
+.centerBadge{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;
+  display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;
+  box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);
+  cursor:pointer;user-select:none;outline:none;transition:transform .15s ease,box-shadow .2s ease
+}
+.centerBadge:hover{transform:translate(-50%,-50%) scale(1.05)}
+.centerBadge:active{transform:translate(-50%,-50%) scale(.98)}
+
+/* barra de progreso */
 .progress{height:8px;background:#edf0f7;border:1px solid #e3e7f2;border-radius:999px;overflow:hidden}
 .progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#6f72c2,#a7afdf)}
 .counter{font-size:13px;color:#444;margin-top:6px}
 
-/* Nombre del jugador */
+/* nombre del jugador */
 #playerDisplay{
-  font-size:22px;
-  font-weight:700;
-  color:var(--ink);
-  background:rgba(255,255,255,.95);
-  padding:10px 18px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  min-width:250px;
-  text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  margin:0 auto 14px;
-  max-width:600px; /* igual que la ruleta */
+  font-size:22px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.95);
+  padding:10px 18px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);
+  min-width:250px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin:0 auto 14px;max-width:600px
 }
 
+/* puntero */
 .pointer{
   position:absolute;right:-20px;top:50%;transform:translateY(-50%);
   width:0;height:0;border-left:20px solid transparent;border-right:20px solid var(--accent);
   border-top:20px solid transparent;border-bottom:20px solid transparent;
-  pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(111,114,194,.6));
-  animation:pulse 1.5s infinite alternate ease-in-out
+  pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(111,114,194,.6))
 }
-@keyframes pulse{from{transform:translateY(-50%)scale(1);opacity:.8}to{transform:translateY(-50%)scale(1.1);opacity:1}}
+
+/* modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;justify-content:center;align-items:center;z-index:1000}
 .modal.show{display:flex}
 .modal-card{position:relative;background:#fff;border:1px solid #e5e7ee;border-radius:14px;padding:18px 16px;text-align:center;min-width:min(520px,92vw);color:#0b0f19;box-shadow:0 18px 60px rgba(0,0,0,.15)}
@@ -116,7 +95,7 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .modal-card .avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #f0f2f7;box-shadow:0 6px 16px rgba(0,0,0,.15);background:#f3f5f9;margin:8px auto 10px;display:block}
 .modal-card .win{font-size:26px;font-weight:800}
 
-/* Ocultar títulos internos */
+/* ocultar títulos internos */
 #setup h2,#roulette h2{display:none}
 #setup[aria-hidden="true"],#roulette[aria-hidden="true"]{display:none!important}
 </style>
@@ -126,7 +105,7 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
     <!-- Título visual eliminado -->
     <section id="setup" class="card" aria-hidden="false">
       <h2>1) Configuración</h2>
-      <p class="small">Pega hasta <b>5.000</b> líneas (una por participante). Repetir una línea aumenta la probabilidad. También puedes usar <b>xN</b> (ej.: Juan x3). Comas, punto y coma y tabs separan dentro de una línea.</p>
+      <p class="small">Pega hasta <b>5.000</b> líneas (una por participante). Puedes usar <b>xN</b> (ej.: Juan x3). Comas, punto y coma y tabs separan dentro de una línea.</p>
       <textarea id="ta" placeholder="@usuario
 usuario
 https://www.instagram.com/handle/"></textarea>
@@ -262,8 +241,7 @@ https://www.instagram.com/handle/"></textarea>
 
     function parseInput(){
       let raw=(ta.value||'').replace(/\r\n?/g,'\n');
-      const lines=raw.split('\n');
-      const out=[];
+      const lines=raw.split('\n');const out=[];
       outer: for(let i=0;i<lines.length;i++){
         const parts=lines[i].split(/[;,\t]+/);
         for(let j=0;j<parts.length;j++){
@@ -271,27 +249,19 @@ https://www.instagram.com/handle/"></textarea>
           const m=p.match(/^(.*?)(?:\s*[xX]\s*(\d+))?$/);
           const name=(m?m[1]:p).trim();
           const n=(m&&m[2])?Math.min(LIMIT,Math.max(1,parseInt(m[2],10))):1;
-          for(let k=0;k<n;k++){
-            out.push(name);
-            if(out.length>=LIMIT)break outer;
-          }
+          for(let k=0;k<n;k++){ out.push(name); if(out.length>=LIMIT)break outer; }
         }
       }
       return out;
     }
 
     function updatePreview(){
-      labels=parseInput();
-      setKPI();
-      next.disabled=labels.length===0;
-      const freq={};
-      labels.forEach(n=>freq[n]=(freq[n]||0)+1);
+      labels=parseInput();setKPI();next.disabled=labels.length===0;
+      const freq={};labels.forEach(n=>freq[n]=(freq[n]||0)+1);
       const arr=Object.keys(freq).map(n=>({name:n,c:freq[n]})).sort((a,b)=>b.c-a.c).slice(0,12);
       previewList.innerHTML='';
       if(!labels.length){
-        const it=document.createElement('div');
-        it.className='small';it.textContent='No hay datos aún.';
-        previewList.appendChild(it);return;
+        const it=document.createElement('div');it.className='small';it.textContent='No hay datos aún.';previewList.appendChild(it);return;
       }
       for(const a of arr){
         const d=document.createElement('div');d.className='item';
@@ -302,14 +272,14 @@ https://www.instagram.com/handle/"></textarea>
     }
     ta.addEventListener('input',updatePreview);
 
-    /* === Tamaño cuadrado real del canvas (anti-óvalo) === */
+    /* canvas cuadrado real (anti-óvalo) */
     function sizeWheel(){
       const wrap=document.querySelector('.canvas-wrap');
       const dpr=Math.max(1,window.devicePixelRatio||1);
-      const sideCSS=wrap.clientWidth;             // ancho del contenedor cuadrado
+      const sideCSS=wrap.clientWidth;        // ancho del contenedor (es cuadrado)
       const side=Math.floor(sideCSS*dpr);
-      wheel.width=side;                            // mismo valor en atributos
-      wheel.height=side;                           // asegura píxel cuadrado
+      wheel.width=side;
+      wheel.height=side;
       return side;
     }
 
@@ -320,16 +290,11 @@ https://www.instagram.com/handle/"></textarea>
       const outerR=Math.min(cx,cy)*.94;const innerR=Math.min(cx,cy)*.28;const rimW=Math.max(2,Math.floor(px*.012));
       o.clearRect(0,0,W,H);o.save();o.translate(cx,cy);
 
-      /* === PALETA SEGÚN TU IMAGEN === */
-      const paletteLight = '#f6f1f4';
-      const palette1 = '#a7afdf';
-      const palette2 = '#aec4e7';
-      const palette3 = '#959bd9';
-      const sliceColors = [paletteLight, palette1, palette2, palette3];
+      /* paleta de tu imagen */
+      const palette = ['#f6f1f4','#a7afdf','#aec4e7','#959bd9'];
 
       const n=Math.max(1,labels.length||1);
       if(n>=300){
-        const palette=[palette1,palette2,palette3,paletteLight];
         for(let i=0;i<n;i++){
           const ang=(i/n)*Math.PI*2,col=palette[i%palette.length];
           o.beginPath();
@@ -338,28 +303,28 @@ https://www.instagram.com/handle/"></textarea>
           o.moveTo(x1,y1);o.lineTo(x2,y2);o.stroke();
         }
         const ring=o.createRadialGradient(0,0,innerR*.98,0,0,outerR);
-        ring.addColorStop(0,'rgba(0,0,0,.25)');ring.addColorStop(1,'rgba(0,0,0,.08)');
+        ring.addColorStop(0,'rgba(0,0,0,.22)');ring.addColorStop(1,'rgba(0,0,0,.07)');
         o.beginPath();o.arc(0,0,outerR,0,Math.PI*2);o.arc(0,0,innerR,0,Math.PI*2,true);o.closePath();o.fillStyle=ring;o.fill();
       }else{
         const angPer=Math.PI*2/n;let a=0;
         for(let i=0;i<n;i++){
           const a0=a,a1=a+angPer;a=a1;
-          const base=sliceColors[i % sliceColors.length];
+          const base=palette[i%palette.length];
           const g=o.createLinearGradient(0,-outerR,0,outerR);
           g.addColorStop(0,base);g.addColorStop(1,'rgba(0,0,0,.08)');
           o.beginPath();o.moveTo(0,0);o.arc(0,0,outerR,a0,a1);o.closePath();o.fillStyle=g;o.fill();
-          o.strokeStyle='rgba(0,0,0,.2)';o.lineWidth=Math.max(1,px*.002);
+          o.strokeStyle='rgba(0,0,0,.18)';o.lineWidth=Math.max(1,px*.002);
           o.beginPath();o.arc(0,0,outerR,a1-0.001,a1);o.stroke();
         }
         o.globalCompositeOperation='destination-out';
         o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
         o.globalCompositeOperation='source-over';
       }
-      /* Aro exterior */
+
+      /* aro exterior blanco como en tu captura */
       o.lineWidth=rimW;o.strokeStyle='#ffffff';
       o.beginPath();o.arc(0,0,outerR+rimW*.5,0,Math.PI*2);o.stroke();
 
-      /* Limpia el centro */
       o.globalCompositeOperation='destination-out';
       o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
       o.globalCompositeOperation='source-over';
@@ -452,31 +417,27 @@ https://www.instagram.com/handle/"></textarea>
       bar.style.transition='none';bar.style.width='0%';
     }
 
+    /* eventos */
     previewBtn.addEventListener('click',updatePreview);
     ta.addEventListener('input',updatePreview);
     next.addEventListener('click',toRoulette);
     back.addEventListener('click',backToSetup);
     spinBtn.addEventListener('click',spin);
     centerBtn.addEventListener('click',spin);
-    centerBtn.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '||e.code==='Space'){e.preventDefault();spin();}
-    });
+    centerBtn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '||e.code==='Space'){e.preventDefault();spin();}});
     closeBtn.addEventListener('click',()=>modal.classList.remove('show'));
-    secBtns.forEach(b=>b.addEventListener('click',()=>{
-      secBtns.forEach(x=>x.removeAttribute('aria-pressed'));
-      b.setAttribute('aria-pressed','true');
-      duration=Math.max(800,parseInt(b.dataset.sec,10)*1000);
-    }));
+    secBtns.forEach(b=>b.addEventListener('click',()=>{secBtns.forEach(x=>x.removeAttribute('aria-pressed'));b.setAttribute('aria-pressed','true');duration=Math.max(800,parseInt(b.dataset.sec,10)*1000);}));
     window.addEventListener('resize',()=>{bitmap=null;draw();});
 
-    /* Demo inicial */
+    /* demo inicial para que VEAS algo de una */
     ta.value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
     updatePreview();
     secBtns.find(b=>b.dataset.sec==='2').click();
   })();
   </script>
+
+  <noscript style="display:block;text-align:center;color:#fff;padding:14px">
+    Activa JavaScript para ver la ruleta.
+  </noscript>
 </body>
 </html>
-```
-
-¿Quieres que también cambie los **puntos/bolitas** del borde para que combinen (p. ej. blanco con sombra suave) o lo dejamos así?
