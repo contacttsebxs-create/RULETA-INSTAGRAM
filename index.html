@@ -40,6 +40,28 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#6b64ff,#b9b5ff)}
 .counter{font-size:13px;color:#444;margin-top:6px}
 
+/* Estilo para el display de nombres */
+#playerDisplay {
+  position: absolute;
+  top: 10%; /* Ajusta la posición vertical */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 250px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 /* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;justify-content:center;align-items:center;z-index:1000}
 .modal.show{display:flex}
@@ -56,7 +78,6 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 <div class="wrap">
   <h1>RULETA INSTAGRAM</h1>
 
-  <!-- FASE 1 -->
   <section id="setup" class="card" aria-hidden="false">
     <h2>1) Configuración</h2>
     <p class="small">Pega hasta <b>5.000</b> líneas (una por participante). Repetir una línea aumenta la probabilidad. También puedes usar <b>xN</b> (ej.: Juan x3). Comas, punto y coma y tabs separan dentro de una línea.</p>
@@ -65,8 +86,8 @@ usuario
 https://www.instagram.com/handle/"></textarea>
     <div class="row" style="margin-top:8px">
       <div class="seg" role="group" aria-label="Duración del giro">
-        <button type="button" data-sec="2">2s</button>
-        <button type="button" data-sec="4" aria-pressed="true">4s</button>
+        <button type="button" data-sec="2" aria-pressed="true">2s</button>
+        <button type="button" data-sec="4">4s</button>
         <button type="button" data-sec="8">8s</button>
       </div>
       <span id="kpi" class="kpi">0 líneas</span>
@@ -79,11 +100,10 @@ https://www.instagram.com/handle/"></textarea>
     <p class="small" id="audioHint" style="margin-top:6px">🔈 El sonido se activará tras tu primer toque/clic o tecla.</p>
   </section>
 
-  <!-- FASE 2 -->
   <section id="roulette" class="card" aria-hidden="true">
     <h2>2) Ruleta</h2>
     <div class="canvas-wrap">
-      <div class="pointer" aria-hidden="true">
+      <div id="playerDisplay"></div> <div class="pointer" aria-hidden="true">
         <svg viewBox="0 0 100 80" fill="none">
           <path d="M92 40 L62 60 L62 20 Z" fill="var(--pointer)" stroke="#60646b" stroke-width="6" stroke-linejoin="round"/>
         </svg>
@@ -102,7 +122,6 @@ https://www.instagram.com/handle/"></textarea>
   </section>
 </div>
 
-<!-- Modal ganador -->
 <div id="m" class="modal" role="dialog" aria-modal="true">
   <div class="modal-card">
     <h3>Ganador</h3>
@@ -135,13 +154,14 @@ const audioHint = document.getElementById('audioHint');
 const modal = document.getElementById('m');
 const winEl = document.getElementById('win');
 const avatarEl = document.getElementById('avatar');
+const playerDisplay = document.getElementById('playerDisplay'); // Nuevo elemento
 
 // ------- Estado
 const LIMIT = 5000;
 let labels = [];
 let rotation = 0; // puntero a la derecha
 let spinning = false;
-let duration = 4000;
+let duration = 2000; // Cambiado a 2 segundos (2000ms)
 let bitmap = null, bitmapSize = 0;
 
 // ------- Audio
@@ -297,10 +317,17 @@ async function setAvatarFor(name){
 
 // ------- Giro
 function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+
+function updatePlayerDisplay(){
+  const randomName = labels[Math.floor(Math.random() * labels.length)];
+  playerDisplay.textContent = randomName;
+}
+
 function spin(){
   if(spinning) return;
   if(!labels.length){ if(!toRoulette()) return; }
   ensureAudio(); spinning=true;
+  
   const n=Math.max(1,labels.length);
   const idx=Math.floor(Math.random()*n);
   const ang=((idx+0.5)/n)*Math.PI*2;
@@ -311,18 +338,28 @@ function spin(){
   bar.style.transition='none'; bar.style.width='0%';
   requestAnimationFrame(()=>{bar.style.transition=`width ${duration}ms linear`; bar.style.width='100%'});
 
-  const t0=performance.now(); let lastTick=t0;
+  const t0=performance.now(); let lastTick=t0; let lastDisplayUpdate=t0;
   function frame(now){
     const t=Math.min(1,(now-t0)/duration), k=easeOutCubic(t);
     rotation=start+(finalRot-start)*k; draw();
+    
+    // Velocidad de los "ticks" de la ruleta
     const interval=25+195*Math.pow(t,0.7);
     if(now-lastTick>=interval){ playTick(0.9-0.6*t); lastTick=now; }
+
+    // Frecuencia de actualización de los nombres
+    if(now-lastDisplayUpdate >= 30) { // Actualiza cada 30ms para un efecto rápido
+        updatePlayerDisplay();
+        lastDisplayUpdate = now;
+    }
+    
     if(t<1){ requestAnimationFrame(frame); } else { onStop(labels[idx]); }
   }
   requestAnimationFrame(frame);
 }
 function onStop(name){
   spinning=false; playWin();
+  playerDisplay.textContent = ''; // Limpiar el display de nombres
   setAvatarFor(name); winEl.textContent=name; modal.classList.add('show');
   bar.style.transition='none'; bar.style.width='0%';
 }
@@ -342,6 +379,8 @@ window.addEventListener('resize', ()=>{ bitmap=null; draw(); });
 // Demo inicial (puedes borrar estas líneas)
 ta.value='@beufryc\n@stevemx_\nusuario_simple\nhttps://www.instagram.com/beufryc/';
 updatePreview();
+// Establecer la duración predeterminada a 2 segundos al inicio
+secBtns.find(b => b.dataset.sec === '2').click();
 })();
 </script>
 </body>
