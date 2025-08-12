@@ -1,3 +1,15 @@
+¡Hecho! Apliqué la paleta de tu captura y dejé la ruleta perfectamente redonda.
+
+Cambios clave:
+
+* Fondo morado `#797cd0`.
+* Paleta de slices: `#f6f1f4`, `#a7afdf`, `#aec4e7`, `#959bd9`.
+* Acento/puntero en `#6f72c2`.
+* Fijé el canvas para que nunca se vea ovalado (mismo ancho/alto en CSS y en los atributos del `<canvas>`).
+
+Pega esto completo:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,10 +17,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RULETA INSTAGRAM</title>
 <style>
-:root{--bg:#f1f2f6;--ink:#0b0f19;--card:#ffffff;--muted:#5b6676;--pointer:#9aa0a6;--accent:#5e57ee}
+:root{
+  --bg:#797cd0;          /* morado de fondo */
+  --ink:#0b0f19;
+  --card:#ffffff;
+  --muted:#5b6676;
+  --pointer:#9aa0a6;
+  --accent:#6f72c2;      /* acento acorde a la paleta */
+}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif
+}
 
 /* Márgenes ajustados */
 .wrap{max-width:980px;margin:12px auto;padding:0 12px}
@@ -32,30 +56,34 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
 .item{display:flex;align-items:center;gap:8px;background:#f8f9fe;border:1px solid #e7ecf7;border-radius:10px;padding:6px 8px}
 .item .tag{font-size:12px;opacity:.85;padding:2px 6px;border-radius:999px;background:#e9eefb}
 
-/* Ruleta un poco más pequeña */
+/* Ruleta: tamaño y forma perfectos (nunca ovalada) */
 .canvas-wrap{
   position:relative;
   margin:12px auto 8px;
-  max-width:600px; /* antes 680px */
-  aspect-ratio:1/1;
+  max-width:600px;       /* un poco más pequeña */
+  aspect-ratio:1/1;      /* contenedor cuadrado */
   flex-grow:1;
   display:flex;
   align-items:center;
   justify-content:center
 }
-
-#wheel{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.1))}
+#wheel{
+  display:block;
+  width:100% !important;   /* cuadrado en CSS */
+  height:100% !important;  /* evita óvalo */
+  filter:drop-shadow(0 10px 24px rgba(0,0,0,.1))
+}
 .centerBadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:#2b2d34;color:#fff;display:grid;place-items:center;font-size:56px;font-weight:900;z-index:2;box-shadow:inset 0 0 0 18px rgba(255,255,255,.85),inset 0 0 0 22px #2b2d34,0 10px 26px rgba(0,0,0,.2);cursor:pointer;user-select:none;outline:none;transition:transform .15s ease,box-shadow .2s ease}
-.centerBadge:hover{transform:translate(-50%,-50%)scale(1.05);box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),inset 0 0 0 22px #2b2d34,0 12px 30px rgba(0,0,0,.22),0 0 0 8px rgba(94,87,238,.18)}
+.centerBadge:hover{transform:translate(-50%,-50%)scale(1.05);box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),inset 0 0 0 22px #2b2d34,0 12px 30px rgba(0,0,0,.22),0 0 0 8px rgba(111,114,194,.18)}
 .centerBadge:active{transform:translate(-50%,-50%)scale(.98)}
-.centerBadge:focus-visible{box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),0 0 0 10px rgba(94,87,238,.35)}
+.centerBadge:focus-visible{box-shadow:inset 0 0 0 18px rgba(255,255,255,.9),0 0 0 10px rgba(111,114,194,.35)}
 
 /* Barra de progreso */
 .progress{height:8px;background:#edf0f7;border:1px solid #e3e7f2;border-radius:999px;overflow:hidden}
-.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#6b64ff,#b9b5ff)}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#6f72c2,#a7afdf)}
 .counter{font-size:13px;color:#444;margin-top:6px}
 
-/* Nombre del jugador: más claro y alineado al ancho de la ruleta */
+/* Nombre del jugador */
 #playerDisplay{
   font-size:22px;
   font-weight:700;
@@ -70,10 +98,16 @@ textarea{width:100%;height:220px;background:#f7f8fc;color:#0b0f19;border:1px sol
   overflow:hidden;
   text-overflow:ellipsis;
   margin:0 auto 14px;
-  max-width:600px; /* igual a la ruleta */
+  max-width:600px; /* igual que la ruleta */
 }
 
-.pointer{position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:20px solid transparent;border-right:20px solid var(--accent);border-top:20px solid transparent;border-bottom:20px solid transparent;pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(94,87,238,.6));animation:pulse 1.5s infinite alternate ease-in-out}
+.pointer{
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  width:0;height:0;border-left:20px solid transparent;border-right:20px solid var(--accent);
+  border-top:20px solid transparent;border-bottom:20px solid transparent;
+  pointer-events:none;z-index:10;filter:drop-shadow(0 0 8px rgba(111,114,194,.6));
+  animation:pulse 1.5s infinite alternate ease-in-out
+}
 @keyframes pulse{from{transform:translateY(-50%)scale(1);opacity:.8}to{transform:translateY(-50%)scale(1.1);opacity:1}}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;justify-content:center;align-items:center;z-index:1000}
 .modal.show{display:flex}
@@ -118,7 +152,7 @@ https://www.instagram.com/handle/"></textarea>
       <div class="canvas-wrap">
         <div class="pointer" aria-hidden="true">
           <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 20 L20 0 L20 15 L40 15 L40 25 L20 25 L20 40 Z" fill="#5e57ee" stroke="#6b64ff" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M0 20 L20 0 L20 15 L40 15 L40 25 L20 25 L20 40 Z" fill="#6f72c2" stroke="#a7afdf" stroke-width="2" stroke-linejoin="round"/>
             <circle cx="40" cy="20" r="6" fill="white" />
           </svg>
         </div>
@@ -268,10 +302,14 @@ https://www.instagram.com/handle/"></textarea>
     }
     ta.addEventListener('input',updatePreview);
 
+    /* === Tamaño cuadrado real del canvas (anti-óvalo) === */
     function sizeWheel(){
+      const wrap=document.querySelector('.canvas-wrap');
       const dpr=Math.max(1,window.devicePixelRatio||1);
-      const side=Math.floor((document.querySelector('.canvas-wrap').clientWidth||600)*dpr); /* 600 para alinear con CSS */
-      if(wheel.width!==side){wheel.width=side;wheel.height=side;}
+      const sideCSS=wrap.clientWidth;             // ancho del contenedor cuadrado
+      const side=Math.floor(sideCSS*dpr);
+      wheel.width=side;                            // mismo valor en atributos
+      wheel.height=side;                           // asegura píxel cuadrado
       return side;
     }
 
@@ -281,9 +319,17 @@ https://www.instagram.com/handle/"></textarea>
       const W=px,H=px,cx=W/2,cy=H/2;
       const outerR=Math.min(cx,cy)*.94;const innerR=Math.min(cx,cy)*.28;const rimW=Math.max(2,Math.floor(px*.012));
       o.clearRect(0,0,W,H);o.save();o.translate(cx,cy);
+
+      /* === PALETA SEGÚN TU IMAGEN === */
+      const paletteLight = '#f6f1f4';
+      const palette1 = '#a7afdf';
+      const palette2 = '#aec4e7';
+      const palette3 = '#959bd9';
+      const sliceColors = [paletteLight, palette1, palette2, palette3];
+
       const n=Math.max(1,labels.length||1);
       if(n>=300){
-        const palette=['#ff3b30','#34c759','#007aff','#ffcc00'];
+        const palette=[palette1,palette2,palette3,paletteLight];
         for(let i=0;i<n;i++){
           const ang=(i/n)*Math.PI*2,col=palette[i%palette.length];
           o.beginPath();
@@ -298,22 +344,26 @@ https://www.instagram.com/handle/"></textarea>
         const angPer=Math.PI*2/n;let a=0;
         for(let i=0;i<n;i++){
           const a0=a,a1=a+angPer;a=a1;
+          const base=sliceColors[i % sliceColors.length];
           const g=o.createLinearGradient(0,-outerR,0,outerR);
-          const base=['#ff3b30','#34c759','#007aff','#ffcc00'][i%4];
           g.addColorStop(0,base);g.addColorStop(1,'rgba(0,0,0,.08)');
           o.beginPath();o.moveTo(0,0);o.arc(0,0,outerR,a0,a1);o.closePath();o.fillStyle=g;o.fill();
-          o.strokeStyle='rgba(0,0,0,.25)';o.lineWidth=Math.max(1,px*.002);
+          o.strokeStyle='rgba(0,0,0,.2)';o.lineWidth=Math.max(1,px*.002);
           o.beginPath();o.arc(0,0,outerR,a1-0.001,a1);o.stroke();
         }
         o.globalCompositeOperation='destination-out';
         o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
         o.globalCompositeOperation='source-over';
       }
-      o.lineWidth=rimW;o.strokeStyle='#2c2f36';
+      /* Aro exterior */
+      o.lineWidth=rimW;o.strokeStyle='#ffffff';
       o.beginPath();o.arc(0,0,outerR+rimW*.5,0,Math.PI*2);o.stroke();
+
+      /* Limpia el centro */
       o.globalCompositeOperation='destination-out';
       o.beginPath();o.arc(0,0,innerR,0,Math.PI*2);o.fill();
       o.globalCompositeOperation='source-over';
+
       o.restore();
       bitmap=off;
     }
@@ -427,3 +477,6 @@ https://www.instagram.com/handle/"></textarea>
   </script>
 </body>
 </html>
+```
+
+¿Quieres que también cambie los **puntos/bolitas** del borde para que combinen (p. ej. blanco con sombra suave) o lo dejamos así?
